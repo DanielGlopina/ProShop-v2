@@ -11,8 +11,8 @@ const router = express.Router();
 // @access  Public
 router.get("/", getProducts);
 
-// @route   GET api/products
-// @desc    Get all products
+// @route   GET api/products/:id
+// @desc    Get single product by id
 // @access  Public
 router.get("/:id", getProductById);
 
