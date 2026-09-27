@@ -26,6 +26,14 @@ const ProductItem = ({ product }: { product: Product }) => {
           />
         </Card.Text>
 
+        <Card.Text as="div" style={{ marginBlock: "3px" }}>
+          {product.countInStock > 0 ? (
+            <div className="text-green-600">In stock</div>
+          ) : (
+            <div className="text-red-600">Out of stock</div>
+          )}
+        </Card.Text>
+
         <Card.Text as="h3">${product.price}</Card.Text>
       </Card.Body>
     </Card>

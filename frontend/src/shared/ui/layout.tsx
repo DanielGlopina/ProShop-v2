@@ -2,7 +2,7 @@ import { Outlet } from "react-router-dom";
 import { Container } from "react-bootstrap";
 
 import Footer from "./footer";
-import Header from "./header";
+import Header from "@/widgets/header/ui/header";
 
 const Layout = () => {
   return (

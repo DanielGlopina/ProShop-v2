@@ -1,5 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import type { CartItem, CartItemActionPayload } from "./types";
+import type { CartItem, CartItemActionPayload } from "../types";
 
 export type CartState = {
   cartItems: Record<string, CartItem>;
@@ -30,30 +30,29 @@ export const cartSlice = createSlice({
 
       localStorage.setItem("cart", JSON.stringify(state.cartItems));
     },
-    increaseItemQty: (state, action: PayloadAction<{_id: string}> ) => {
-      const {_id} = action.payload;
-        const currentQty = state.cartItems[_id].qty;
+    increaseItemQty: (state, action: PayloadAction<{ _id: string }>) => {
+      const { _id } = action.payload;
+      const currentQty = state.cartItems[_id].qty;
 
       if (currentQty > state.cartItems[_id].countInStock) {
         return;
       }
-      
+
       state.cartItems[_id].qty++;
 
       localStorage.setItem("cart", JSON.stringify(state.cartItems));
     },
-    reduceItemQty: (state, action: PayloadAction<{_id: string}>) => {
-      const {_id} = action.payload;
+    reduceItemQty: (state, action: PayloadAction<{ _id: string }>) => {
+      const { _id } = action.payload;
       const currentQty = state.cartItems[_id].qty;
 
-      if(currentQty > 1){
+      if (currentQty > 1) {
         state.cartItems[_id].qty = currentQty - 1;
-      }
-      else{
+      } else {
         delete state.cartItems[_id];
       }
 
       localStorage.setItem("cart", JSON.stringify(state.cartItems));
-    }
+    },
   },
 });

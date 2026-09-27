@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 
 import Layout from "@/shared/ui/layout";
+import { AuthPage } from "@/pages/auth-page";
 import { HomePage } from "@/pages/home-page";
 import { ProductPage } from "@/pages/product-page";
 import { CartPage } from "@/pages/cart-page";
@@ -42,5 +43,9 @@ export const router = createBrowserRouter([
         element: <CartPage />,
       },
     ],
+  },
+  {
+    path: "/auth/:mode",
+    element: <AuthPage />,
   },
 ]);

@@ -5,7 +5,7 @@ import { LuLoaderCircle } from "react-icons/lu";
 import ToastNotification from "@/shared/ui/toast-notification";
 
 import { useGetProductQuery } from "@/features/products/api";
-import { getErrorMessage } from "@/shared/getErrorMessage";
+import { getErrorMessage } from "@/shared/get-error-message";
 import ProductCard from "./product-card";
 
 const ProductPage = () => {

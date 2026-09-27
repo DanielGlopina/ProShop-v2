@@ -3,7 +3,7 @@ import { Row, Col, Image, ListGroup, Card, Button } from "react-bootstrap";
 import ProductRating from "@/features/products/product-rating";
 
 import type { Product } from "@/features/products/type";
-import { cartSlice } from "@/features/cart/cart.slice";
+import { cartSlice } from "@/features/cart/model/cart.slice";
 import { useAppDispatch, useAppSelector } from "@/app/store";
 
 const ProductCard = ({ product }: { product: Product }) => {
@@ -69,7 +69,7 @@ const ProductCard = ({ product }: { product: Product }) => {
                 <Col>Status:</Col>
                 <Col>
                   <strong>
-                    ${product.countInStock > 0 ? "In Stock" : "Out of Stock"}
+                    {product.countInStock > 0 ? "In Stock" : "Out of Stock"}
                   </strong>
                 </Col>
               </Row>
