@@ -1,14 +1,20 @@
-import { Navbar, Nav, Container, Badge } from "react-bootstrap";
+import { useMemo } from "react";
+import { Navbar, Nav, Container, Badge, Dropdown } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import { FaShoppingCart, FaUser } from "react-icons/fa";
+import { BiDoorOpen } from "react-icons/bi";
 
 import { useAppSelector } from "@/app/store";
 import { authSlice } from "@/features/auth/model/auth.slice";
 import { cartSlice } from "@/features/cart/model/cart.slice";
+import { logoutThunk } from "@/features/auth/model/auth.thunks";
+import { useAppDispatch } from "@/app/store";
 import logo from "@/shared/assets/logo.png";
-import { useMemo } from "react";
+import { BsArrowDown } from "react-icons/bs";
 
 const Header = () => {
+  const dispatch = useAppDispatch();
+  const user = useAppSelector(authSlice.selectors.selectUser);
   const isAuth = useAppSelector(authSlice.selectors.selectIsAuth);
   const cartItemsObj = useAppSelector(cartSlice.selectors.selectCartItems);
 
@@ -19,6 +25,10 @@ const Header = () => {
       return acc + curr[1].qty;
     }, 0);
   }, [cartItemsObj]);
+
+  const handleLogout = () => {
+    dispatch(logoutThunk());
+  };
 
   return (
     <header>
@@ -51,11 +61,30 @@ const Header = () => {
               </LinkContainer>
               {isAuth ? (
                 <div>
-                  <Container>
-                    <Nav.Link as={"button"}>
-                      <FaUser /> Profile
-                    </Nav.Link>
-                  </Container>
+                  <Dropdown align="end">
+                    <Dropdown.Toggle
+                      as="button"
+                      bsPrefix="nav-link"
+                      id="profile-dropdown"
+                      className="border-0 bg-transparent d-flex align-items-center gap-2 px-0"
+                    >
+                      <span>{user.name}</span>
+                      <BsArrowDown
+                        className="fs-6"
+                        style={{ transform: "translateY(1px)" }}
+                      />
+                    </Dropdown.Toggle>
+
+                    <Dropdown.Menu>
+                      <Dropdown.Item
+                        as={"button"}
+                        onClick={() => handleLogout()}
+                        style={{ color: "red", fontWeight: "600" }}
+                      >
+                        Logout <BiDoorOpen className="inline-block" />
+                      </Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
                 </div>
               ) : (
                 <LinkContainer to="/auth/login">

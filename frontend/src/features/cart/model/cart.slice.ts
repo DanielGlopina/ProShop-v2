@@ -1,12 +1,26 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import type { CartItem, CartItemActionPayload } from "../types";
+import type {
+  CartItem,
+  CartItemActionPayload,
+  ShippingAddress,
+  PaymentMethod,
+} from "../types";
 
 export type CartState = {
   cartItems: Record<string, CartItem>;
+  shippingAddress: ShippingAddress;
+  paymentMethod: PaymentMethod;
 };
 
 const initialCartState: CartState = {
   cartItems: JSON.parse(localStorage.getItem("cart") as string) ?? {},
+  shippingAddress: {
+    address: "",
+    city: "",
+    postalCode: "",
+    country: "",
+  },
+  paymentMethod: "PayPal",
 };
 
 export const cartSlice = createSlice({
@@ -15,6 +29,7 @@ export const cartSlice = createSlice({
   selectors: {
     selectCartItems: (state) => state.cartItems,
     selectCartItem: (state, _id: string) => state.cartItems[_id],
+    selectShippingAddress: (state) => state.shippingAddress,
   },
   reducers: {
     addToCart: (state, action: PayloadAction<CartItemActionPayload>) => {
@@ -53,6 +68,29 @@ export const cartSlice = createSlice({
       }
 
       localStorage.setItem("cart", JSON.stringify(state.cartItems));
+    },
+    saveShippingAddress: (
+      state,
+      action: PayloadAction<{
+        address: string;
+        city: string;
+        postalCode: string;
+        country: string;
+      }>,
+    ) => {
+      const shippingAddress = action.payload;
+
+      state.shippingAddress = {
+        ...shippingAddress,
+      };
+    },
+    savePaymentMethod: (
+      state,
+      action: PayloadAction<{
+        paymentMethod: PaymentMethod;
+      }>,
+    ) => {
+      state.paymentMethod = action.payload.paymentMethod;
     },
   },
 });

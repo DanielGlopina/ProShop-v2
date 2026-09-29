@@ -10,12 +10,14 @@ import type { User } from "../types";
 export type AuthState = {
   user: User;
   isAuth: boolean;
+  isInitialized: boolean;
   isLoading: boolean;
 };
 
 const initialAuthState: AuthState = {
   user: {} as User,
   isAuth: false,
+  isInitialized: false,
   isLoading: false,
 };
 
@@ -26,41 +28,88 @@ export const authSlice = createSlice({
     selectIsAuth: (state) => state.isAuth,
     selectUser: (state) => state.user,
     selectLoadingStatus: (state) => state.isLoading,
+    selectIsInitialized: (state) => state.isInitialized,
   },
   reducers: {
     setLoading: (state, action: PayloadAction<{ bool: boolean }>) => {
       state.isLoading = action.payload.bool;
     },
+    setInitialized: (state, action: PayloadAction<boolean>) => {
+      state.isInitialized = action.payload;
+    },
   },
   extraReducers: (builder) => {
-    builder.addCase(loginThunk.fulfilled, (state, action) => {
-      const { user, accessToken } = action.payload;
+    //=== Login ===
+    builder
+      .addCase(loginThunk.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(loginThunk.fulfilled, (state, action) => {
+        const { user, accessToken } = action.payload;
 
-      localStorage.setItem("token", accessToken);
-      state.isAuth = true;
-      state.user = user;
-    });
+        localStorage.setItem("token", accessToken);
+        state.isAuth = true;
+        state.user = user;
+        state.isLoading = false;
+      })
+      .addCase(loginThunk.rejected, (state) => {
+        state.isLoading = false;
+      });
 
-    builder.addCase(registrationThunk.fulfilled, (state, action) => {
-      const { user, accessToken } = action.payload;
+    //=== Registration ===
+    builder
+      .addCase(registrationThunk.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(registrationThunk.fulfilled, (state, action) => {
+        const { user, accessToken } = action.payload;
 
-      localStorage.setItem("token", accessToken);
-      state.isAuth = true;
-      state.user = user;
-    });
+        localStorage.setItem("token", accessToken);
+        state.isAuth = true;
+        state.user = user;
 
-    builder.addCase(logoutThunk.fulfilled, (state) => {
-      localStorage.removeItem("token");
-      state.isAuth = false;
-      state.user = {} as User;
-    });
+        state.isLoading = false;
+      })
+      .addCase(registrationThunk.rejected, (state) => {
+        state.isLoading = false;
+      });
 
-    builder.addCase(checkAuthThunk.fulfilled, (state, action) => {
-      const { accessToken, user } = action.payload;
+    //=== Logout ===
+    builder
+      .addCase(logoutThunk.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(logoutThunk.fulfilled, (state) => {
+        localStorage.removeItem("token");
+        state.isAuth = false;
+        state.user = {} as User;
 
-      localStorage.setItem("token", accessToken);
-      state.isAuth = true;
-      state.user = user;
-    });
+        state.isLoading = false;
+      })
+      .addCase(logoutThunk.rejected, (state) => {
+        state.isLoading = false;
+      });
+
+    //=== Check Auth ===
+    builder
+      .addCase(checkAuthThunk.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(checkAuthThunk.fulfilled, (state, action) => {
+        const { accessToken, user } = action.payload;
+
+        localStorage.setItem("token", accessToken);
+        state.user = user;
+        state.isAuth = true;
+        state.isInitialized = true;
+        state.isLoading = false;
+      })
+      .addCase(checkAuthThunk.rejected, (state) => {
+        localStorage.removeItem("token");
+        state.user = {} as User;
+        state.isAuth = false;
+        state.isInitialized = true;
+        state.isLoading = false;
+      });
   },
 });

@@ -11,6 +11,7 @@ const CartItemsTable = ({
   cartItemsEntries: [string, CartItem][];
 }) => {
   const dispatch = useAppDispatch();
+
   const handleIncreaseItem = (_id: string) => {
     dispatch(cartSlice.actions.increaseItemQty({ _id }));
   };

@@ -9,8 +9,10 @@ export type CartItem = {
 export type CartItemActionPayload = Omit<CartItem, "qty"> & { _id: string };
 
 export type ShippingAddress = {
-  address?: string;
-  city?: string;
-  postalCode?: string;
-  country?: string;
+  address: string;
+  city: string;
+  postalCode: string;
+  country: string;
 };
+
+export type PaymentMethod = "PayPal" | "Stripe" | "COD";

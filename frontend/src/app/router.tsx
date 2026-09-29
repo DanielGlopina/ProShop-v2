@@ -5,9 +5,12 @@ import { AuthPage } from "@/pages/auth-page";
 import { HomePage } from "@/pages/home-page";
 import { ProductPage } from "@/pages/product-page";
 import { CartPage } from "@/pages/cart-page";
+import { ShippingPage } from "@/pages/shipping-page";
+import { PaymentPage } from "@/pages/payment-page";
 
 import { store } from "./store";
 import { productsApi } from "@/features/products/api";
+import { ContactsPage } from "@/pages/contacts-page";
 
 export const router = createBrowserRouter([
   {
@@ -41,6 +44,18 @@ export const router = createBrowserRouter([
       {
         path: "/cart",
         element: <CartPage />,
+      },
+      {
+        path: "/shipping",
+        element: <ShippingPage />,
+      },
+      {
+        path: "/payment",
+        element: <PaymentPage />,
+      },
+      {
+        path: "/contacts",
+        element: <ContactsPage />,
       },
     ],
   },
