@@ -1,3 +1,3 @@
 export const cartConfig = {
-    shippingPrice: 2.99
-}
+  shippingPrice: 2.99,
+};

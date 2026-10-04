@@ -1,6 +1,6 @@
 import z from "zod";
 import { baseApi } from "@/shared/api";
-import type { Product, ProductList } from "./type";
+import type { Product, ProductList, AddProductData } from "../types";
 
 const ProductDtoSchema = z.object({
   _id: z.string(),
@@ -27,7 +27,19 @@ export const productsApi = baseApi.injectEndpoints({
       providesTags: ["Products"],
       transformResponse: (res: unknown) => ProductDtoSchema.parse(res),
     }),
+    addProduct: create.mutation({
+      query: (product: AddProductData) => ({
+        url: "/products/add",
+        method: "POST",
+        body: { ...product },
+      }),
+      invalidatesTags: ["Products"],
+    }),
   }),
 });
 
-export const { useGetProductQuery, useGetProductsQuery } = productsApi;
+export const {
+  useGetProductQuery,
+  useGetProductsQuery,
+  useAddProductMutation,
+} = productsApi;

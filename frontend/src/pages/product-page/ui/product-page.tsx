@@ -1,10 +1,9 @@
 import { Link, useParams } from "react-router-dom";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { LuLoaderCircle } from "react-icons/lu";
+import { toast } from "sonner";
 
-import ToastNotification from "@/shared/ui/toast-notification";
-
-import { useGetProductQuery } from "@/features/products/api";
+import { useGetProductQuery } from "@/features/products/model/api";
 import { getErrorMessage } from "@/shared/get-error-message";
 import ProductCard from "./product-card";
 
@@ -24,13 +23,7 @@ const ProductPage = () => {
         Go Back
       </Link>
 
-      {isError && (
-        <ToastNotification
-          message={getErrorMessage(error)}
-          style="danger"
-          visible
-        />
-      )}
+      {isError && toast.error(getErrorMessage(error))}
 
       {isProductLoading && (
         <LuLoaderCircle className="animate-spin mx-auto" size={50} />

@@ -1,15 +1,12 @@
 import { Table, Button, Image, Form } from "react-bootstrap";
 import { FaMinus, FaPlus } from "react-icons/fa";
 
-import type { CartItem } from "@/features/cart/types";
+import type { CartArrayItem } from "@/features/cart/types";
 import { useAppDispatch } from "@/app/store";
 import { cartSlice } from "@/features/cart/model/cart.slice";
+import { cloudinary } from "@/shared/cloudinary";
 
-const CartItemsTable = ({
-  cartItemsEntries,
-}: {
-  cartItemsEntries: [string, CartItem][];
-}) => {
+const CartItemsTable = ({ cartItems }: { cartItems: CartArrayItem[] }) => {
   const dispatch = useAppDispatch();
 
   const handleIncreaseItem = (_id: string) => {
@@ -34,62 +31,57 @@ const CartItemsTable = ({
       </thead>
 
       <tbody>
-        {cartItemsEntries &&
-          cartItemsEntries.map((entrie) => {
-            const id = entrie[0];
-            const item = entrie[1];
-
-            return (
-              <tr key={id}>
-                <th scope="row">
-                  <div className="d-flex align-items-center">
-                    <Image
-                      src={item.image}
-                      rounded
-                      fluid
-                      style={{ width: 120 }}
-                      alt="Book"
-                    />
-                    <div className="flex-column ms-4">
-                      <p className="mb-2 text-left">{item.name}</p>
-                    </div>
+        {cartItems &&
+          cartItems.map((item) => (
+            <tr key={item._id}>
+              <th scope="row">
+                <div className="d-flex align-items-center">
+                  <Image
+                    src={cloudinary(item.image).myImage.toURL()}
+                    rounded
+                    fluid
+                    style={{ width: 120 }}
+                    alt="Book"
+                  />
+                  <div className="flex-column ms-4">
+                    <p className="mb-2 text-left">{item.name}</p>
                   </div>
-                </th>
+                </div>
+              </th>
 
-                <td className="align-middle">
-                  <div className="d-flex flex-row align-items-center">
-                    <Button
-                      variant="link"
-                      className="px-2"
-                      onClick={() => handleDecreaseItem(id)}
-                    >
-                      <FaMinus />
-                    </Button>
-                    <Form.Control
-                      min={1}
-                      type="number"
-                      size="sm"
-                      style={{ width: 60 }}
-                      value={item.qty}
-                      readOnly
-                    />
-                    <Button
-                      onClick={() => handleIncreaseItem(id)}
-                      variant="link"
-                      className="px-2"
-                    >
-                      <FaPlus />
-                    </Button>
-                  </div>
-                </td>
-                <td className="align-middle">
-                  <p className="mb-0" style={{ fontWeight: 500 }}>
-                    ${item.price}
-                  </p>
-                </td>
-              </tr>
-            );
-          })}
+              <td className="align-middle">
+                <div className="d-flex flex-row align-items-center">
+                  <Button
+                    variant="link"
+                    className="px-2"
+                    onClick={() => handleDecreaseItem(item._id)}
+                  >
+                    <FaMinus />
+                  </Button>
+                  <Form.Control
+                    min={1}
+                    type="number"
+                    size="sm"
+                    style={{ width: 60 }}
+                    value={item.qty}
+                    readOnly
+                  />
+                  <Button
+                    onClick={() => handleIncreaseItem(item._id)}
+                    variant="link"
+                    className="px-2"
+                  >
+                    <FaPlus />
+                  </Button>
+                </div>
+              </td>
+              <td className="align-middle">
+                <p className="mb-0" style={{ fontWeight: 500 }}>
+                  ${item.price}
+                </p>
+              </td>
+            </tr>
+          ))}
       </tbody>
     </Table>
   );

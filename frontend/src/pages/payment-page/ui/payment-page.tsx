@@ -6,31 +6,35 @@ import FormContainer from "@/shared/ui/form-container";
 import CheckoutSteps from "@/shared/ui/checkout-steps";
 
 import { cartSlice } from "@/features/cart/model/cart.slice";
-import { useAppDispatch, useAppSelector } from "@/app/store";
+import { useAppSelector } from "@/app/store";
+import { useAppDispatch } from "@/app/store";
 import type { PaymentMethod } from "@/features/cart/types";
 
 const PaymentPage = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("PayPal");
   const shippingAddress = useAppSelector(
     cartSlice.selectors.selectShippingAddress,
   );
+  const contacts = useAppSelector(cartSlice.selectors.selectContacts);
+
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("PayPal");
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     dispatch(cartSlice.actions.savePaymentMethod({ paymentMethod }));
     navigate("/placeorder");
   };
 
   useEffect(() => {
-    Object.entries(shippingAddress).forEach((pair) => {
-      if (pair[1] === "") {
-        navigate("/shipping");
-      }
-    });
-  });
+    if (!shippingAddress) {
+      navigate("/shipping", { replace: true });
+    } else if (!contacts) {
+      navigate("/contacts", { replace: true });
+    }
+  }, [shippingAddress, contacts, navigate]);
 
   return (
     <FormContainer>
@@ -47,7 +51,7 @@ const PaymentPage = () => {
               id="PayPal"
               name="paymentMethod"
               value="PayPal"
-              checked
+              checked={paymentMethod === "PayPal"}
               onChange={(e) =>
                 setPaymentMethod(e.target.value as PaymentMethod)
               }
@@ -60,7 +64,7 @@ const PaymentPage = () => {
               id="Stripe"
               name="paymentMethod"
               value="Stripe"
-              checked
+              checked={paymentMethod === "Stripe"}
               onChange={(e) =>
                 setPaymentMethod(e.target.value as PaymentMethod)
               }
@@ -73,7 +77,7 @@ const PaymentPage = () => {
               id="COD"
               name="paymentMethod"
               value="COD"
-              checked
+              checked={paymentMethod === "COD"}
               onChange={(e) =>
                 setPaymentMethod(e.target.value as PaymentMethod)
               }

@@ -6,6 +6,10 @@ export type CartItem = {
   qty: number;
 };
 
+export type CartArrayItem = Omit<CartItem, "countInStock"> & {
+  _id: string;
+};
+
 export type CartItemActionPayload = Omit<CartItem, "qty"> & { _id: string };
 
 export type ShippingAddress = {
@@ -13,6 +17,12 @@ export type ShippingAddress = {
   city: string;
   postalCode: string;
   country: string;
+};
+
+export type Contacts = {
+  name: string;
+  email: string;
+  phoneNumber: string;
 };
 
 export type PaymentMethod = "PayPal" | "Stripe" | "COD";

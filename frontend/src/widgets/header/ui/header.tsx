@@ -1,8 +1,10 @@
 import { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { Navbar, Nav, Container, Badge, Dropdown } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import { FaShoppingCart, FaUser } from "react-icons/fa";
-import { BiDoorOpen } from "react-icons/bi";
+import { BsArrowDown } from "react-icons/bs";
+import { BiDoorOpen, BiPlusCircle } from "react-icons/bi";
 
 import { useAppSelector } from "@/app/store";
 import { authSlice } from "@/features/auth/model/auth.slice";
@@ -10,25 +12,20 @@ import { cartSlice } from "@/features/cart/model/cart.slice";
 import { logoutThunk } from "@/features/auth/model/auth.thunks";
 import { useAppDispatch } from "@/app/store";
 import logo from "@/shared/assets/logo.png";
-import { BsArrowDown } from "react-icons/bs";
+import { transformCartItemsToArray } from "@/shared/utils/transformCartItemsToArray";
+import { getTotalItemsQty } from "@/shared/utils/getTotalItemsQty";
 
 const Header = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const user = useAppSelector(authSlice.selectors.selectUser);
   const isAuth = useAppSelector(authSlice.selectors.selectIsAuth);
-  const cartItemsObj = useAppSelector(cartSlice.selectors.selectCartItems);
+  const cartItemsRaw = useAppSelector(cartSlice.selectors.selectCartItems);
+  const cartItems = transformCartItemsToArray(cartItemsRaw);
 
-  const productsQtySum = useMemo(() => {
-    const cartItemsEntries = Object.entries(cartItemsObj);
-
-    return cartItemsEntries.reduce((acc, curr) => {
-      return acc + curr[1].qty;
-    }, 0);
-  }, [cartItemsObj]);
-
-  const handleLogout = () => {
-    dispatch(logoutThunk());
-  };
+  const cartItemsQty = useMemo(() => {
+    return getTotalItemsQty(cartItems);
+  }, [cartItems]);
 
   return (
     <header>
@@ -52,9 +49,9 @@ const Header = () => {
               <LinkContainer to="/cart">
                 <Nav.Link>
                   <FaShoppingCart /> Cart
-                  {productsQtySum > 0 && (
+                  {cartItems.length > 0 && (
                     <Badge bg="primary" pill className="ml-0.5">
-                      {productsQtySum}
+                      {cartItemsQty}
                     </Badge>
                   )}
                 </Nav.Link>
@@ -66,19 +63,30 @@ const Header = () => {
                       as="button"
                       bsPrefix="nav-link"
                       id="profile-dropdown"
-                      className="border-0 bg-transparent d-flex align-items-center gap-2 px-0"
+                      className="border-0 bg-transparent flex align-items-center gap-2 px-0"
                     >
-                      <span>{user.name}</span>
-                      <BsArrowDown
-                        className="fs-6"
-                        style={{ transform: "translateY(1px)" }}
-                      />
+                      <FaUser />
+                      <div className="flex items-center">
+                        <span>{user.name}</span>
+                        <BsArrowDown
+                          className="fs-6"
+                          style={{ transform: "translateY(1px)" }}
+                        />
+                      </div>
                     </Dropdown.Toggle>
 
                     <Dropdown.Menu>
+                      {user.isAdmin && (
+                        <Dropdown.Item
+                          as={"button"}
+                          onClick={() => navigate("/admin/addproduct")}
+                        >
+                          Add product <BiPlusCircle className="inline-block" />
+                        </Dropdown.Item>
+                      )}
                       <Dropdown.Item
                         as={"button"}
-                        onClick={() => handleLogout()}
+                        onClick={() => dispatch(logoutThunk())}
                         style={{ color: "red", fontWeight: "600" }}
                       >
                         Logout <BiDoorOpen className="inline-block" />

@@ -1,10 +1,11 @@
 import { Row, Col, Image, ListGroup, Card, Button } from "react-bootstrap";
 
-import ProductRating from "@/features/products/product-rating";
+import ProductRating from "@/features/products/ui/product-rating";
 
-import type { Product } from "@/features/products/type";
+import type { Product } from "@/features/products/types";
 import { cartSlice } from "@/features/cart/model/cart.slice";
 import { useAppDispatch, useAppSelector } from "@/app/store";
+import { cloudinary } from "@/shared/cloudinary";
 
 const ProductCard = ({ product }: { product: Product }) => {
   const dispatch = useAppDispatch();
@@ -30,7 +31,11 @@ const ProductCard = ({ product }: { product: Product }) => {
     <Row>
       {/*=== Product Illustration ===*/}
       <Col md={5}>
-        <Image src={product.image} alt={product.name} fluid />
+        <Image
+          src={cloudinary(product.image).myImage.toURL()}
+          alt={product.name}
+          fluid
+        />
       </Col>
 
       {/*=== Central part ===*/}

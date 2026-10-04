@@ -1,4 +1,4 @@
-import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+﻿import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import {
   loginThunk,
   registrationThunk,
@@ -6,6 +6,7 @@ import {
   checkAuthThunk,
 } from "./auth.thunks";
 import type { User } from "../types";
+import { sessionExpired } from "./session-actions";
 
 export type AuthState = {
   user: User;
@@ -29,6 +30,7 @@ export const authSlice = createSlice({
     selectUser: (state) => state.user,
     selectLoadingStatus: (state) => state.isLoading,
     selectIsInitialized: (state) => state.isInitialized,
+    selectIsAdmin: (state) => state.user.isAdmin,
   },
   reducers: {
     setLoading: (state, action: PayloadAction<{ bool: boolean }>) => {
@@ -39,6 +41,12 @@ export const authSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    builder.addCase(sessionExpired, (state) => {
+      state.isAuth = false;
+      state.user = {} as User;
+      state.isLoading = false;
+      state.isInitialized = true;
+    });
     //=== Login ===
     builder
       .addCase(loginThunk.pending, (state) => {

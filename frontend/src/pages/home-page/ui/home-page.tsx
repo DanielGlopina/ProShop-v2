@@ -1,10 +1,10 @@
 import { Row, Col } from "react-bootstrap";
 import { LuLoaderCircle } from "react-icons/lu";
+import { toast } from "sonner";
 
-import Product from "@/features/products/product-item";
+import Product from "@/features/products/ui/product-item";
 
-import { useGetProductsQuery } from "@/features/products/api";
-import ToastNotification from "@/shared/ui/toast-notification";
+import { useGetProductsQuery } from "@/features/products/model/api";
 
 const HomePage = () => {
   const {
@@ -17,13 +17,7 @@ const HomePage = () => {
     <>
       <h1>Latest Products</h1>
 
-      {isError && (
-        <ToastNotification
-          message={"Something went wrong while received products"}
-          style="danger"
-          visible
-        />
-      )}
+      {isError && toast.error("Something went wrong while received products")}
 
       {isLoadingProducts && (
         <LuLoaderCircle className="animate-spin mx-auto" size={50} />

@@ -4,22 +4,21 @@ import type {
   CartItemActionPayload,
   ShippingAddress,
   PaymentMethod,
+  Contacts,
 } from "../types";
 
 export type CartState = {
   cartItems: Record<string, CartItem>;
-  shippingAddress: ShippingAddress;
+  shippingAddress: ShippingAddress | null;
+  contacts: Contacts | null;
   paymentMethod: PaymentMethod;
 };
 
 const initialCartState: CartState = {
   cartItems: JSON.parse(localStorage.getItem("cart") as string) ?? {},
-  shippingAddress: {
-    address: "",
-    city: "",
-    postalCode: "",
-    country: "",
-  },
+  shippingAddress:
+    JSON.parse(localStorage.getItem("shippingAddress") as string) ?? null,
+  contacts: JSON.parse(localStorage.getItem("contacts") as string) ?? null,
   paymentMethod: "PayPal",
 };
 
@@ -30,6 +29,8 @@ export const cartSlice = createSlice({
     selectCartItems: (state) => state.cartItems,
     selectCartItem: (state, _id: string) => state.cartItems[_id],
     selectShippingAddress: (state) => state.shippingAddress,
+    selectContacts: (state) => state.contacts,
+    selectPaymentMethod: (state) => state.paymentMethod,
   },
   reducers: {
     addToCart: (state, action: PayloadAction<CartItemActionPayload>) => {
@@ -83,6 +84,18 @@ export const cartSlice = createSlice({
       state.shippingAddress = {
         ...shippingAddress,
       };
+
+      localStorage.setItem(
+        "shippingAddress",
+        JSON.stringify(state.shippingAddress),
+      );
+    },
+    saveContacts: (state, action: PayloadAction<Contacts>) => {
+      const contacts = action.payload;
+
+      state.contacts = contacts;
+
+      localStorage.setItem("contacts", JSON.stringify(state.contacts));
     },
     savePaymentMethod: (
       state,
@@ -91,6 +104,10 @@ export const cartSlice = createSlice({
       }>,
     ) => {
       state.paymentMethod = action.payload.paymentMethod;
+    },
+    clearCart: (state) => {
+      state.cartItems = {};
+      localStorage.removeItem("cart");
     },
   },
 });

@@ -1,24 +1,14 @@
-import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Row, Col, Card, Button } from "react-bootstrap";
 
-import type { CartItem } from "@/features/cart/types";
+import type { CartArrayItem } from "@/features/cart/types";
 import { cartConfig } from "@/features/cart/cart.config";
+import { getCartTotals } from "@/shared/utils/getCartTotals";
 
-const CartSummary = ({
-  cartItemsEntries,
-  productQtySum,
-}: {
-  cartItemsEntries: [string, CartItem][];
-  productQtySum: number;
-}) => {
+const CartSummary = ({ cartItems }: { cartItems: CartArrayItem[] }) => {
   const navigate = useNavigate();
 
-  const cartTotals = useMemo(() => {
-    return cartItemsEntries.reduce((acc, curr) => {
-      return acc + curr[1].price * curr[1].qty;
-    }, 0);
-  }, [cartItemsEntries]);
+  const cartTotals = getCartTotals(cartItems);
 
   return (
     <Card className="shadow mb-5 mb-lg-0" style={{ borderRadius: 16 }}>
@@ -48,7 +38,7 @@ const CartSummary = ({
             <div className="d-grid">
               <Button
                 size="lg"
-                disabled={productQtySum === 0}
+                disabled={cartItems.length === 0}
                 onClick={() => navigate("/shipping")}
               >
                 <div className="d-flex justify-content-between">

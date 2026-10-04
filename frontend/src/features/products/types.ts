@@ -1,5 +1,4 @@
-export type Product = {
-  _id: string;
+export type AddProductData = {
   name: string;
   image: string;
   description: string;
@@ -7,6 +6,10 @@ export type Product = {
   category: string;
   price: number;
   countInStock: number;
+};
+
+export type Product = AddProductData & {
+  _id: string;
   rating: number;
   numReviews: number;
 };

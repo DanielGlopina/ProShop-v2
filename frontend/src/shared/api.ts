@@ -1,6 +1,7 @@
-import axios from "axios";
+﻿import axios from "axios";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
+import { sessionExpired } from "@/features/auth/model/session-actions";
 import type { AuthResponse } from "@/features/auth/types";
 
 export const baseUrl = import.meta.env.VITE_URL_BASE;
@@ -10,20 +11,60 @@ const axiosApi = axios.create({
   baseURL: baseUrl,
 });
 
-export const baseApi = createApi({
-  baseQuery: fetchBaseQuery({ baseUrl }),
-  tagTypes: ["Products"],
-  endpoints: () => ({}),
+let refreshPromise: Promise<string> | null = null;
+
+export const refreshAccessToken = (): Promise<string> => {
+  if (!refreshPromise) {
+    refreshPromise = axios
+      .get<AuthResponse>(`${baseUrl}/refresh`, { withCredentials: true })
+      .then(({ data }) => {
+        localStorage.setItem("token", data.accessToken);
+        return data.accessToken;
+      })
+      .finally(() => {
+        refreshPromise = null;
+      });
+  }
+
+  return refreshPromise;
+};
+
+const rawBaseQuery = fetchBaseQuery({
+  baseUrl,
+  credentials: "include",
+  prepareHeaders: (headers) => {
+    const token = localStorage.getItem("token");
+    if (token) headers.set("Authorization", `Bearer ${token}`);
+    else headers.delete("Authorization");
+    return headers;
+  },
 });
 
-export const refreshAccessToken = async (): Promise<string> => {
-  const { data } = await axios.get<AuthResponse>(`${baseUrl}/refresh`, {
-    withCredentials: true,
-  });
+const baseQueryWithReauth: typeof rawBaseQuery = async (
+  args,
+  api,
+  extraOptions,
+) => {
+  let result = await rawBaseQuery(args, api, extraOptions);
 
-  localStorage.setItem("token", data.accessToken);
-  return data.accessToken;
+  if (result.error?.status === 401) {
+    try {
+      await refreshAccessToken();
+      result = await rawBaseQuery(args, api, extraOptions);
+    } catch {
+      localStorage.removeItem("token");
+      api.dispatch(sessionExpired());
+    }
+  }
+
+  return result;
 };
+
+export const baseApi = createApi({
+  baseQuery: baseQueryWithReauth,
+  tagTypes: ["Products", "Orders"],
+  endpoints: () => ({}),
+});
 
 //=== Interceptors ===
 axiosApi.interceptors.request.use((config) => {
@@ -65,3 +106,5 @@ axiosApi.interceptors.response.use(
 );
 
 export default axiosApi;
+
+

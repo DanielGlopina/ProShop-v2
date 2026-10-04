@@ -7,7 +7,13 @@
     <title>Welcome to ProShop</title>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div id="paypal-button-container">
+        <paypal-button hidden></paypal-button>
+      </div>
+      <div id="result"></div>
+    </div>
+    <script src="https://upload-widget.cloudinary.com/global/all.js"></script>
     <script type="module" src="/src/app/main.tsx"></script>
   </body>
 </html>
