@@ -4,8 +4,12 @@ const orderSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      required: true,
       ref: "User",
+    },
+    contacts: {
+      name: { type: String, required: true },
+      email: { type: String, required: true },
+      phoneNumber: { type: String, required: true },
     },
     orderItems: [
       {
@@ -21,26 +25,30 @@ const orderSchema = new mongoose.Schema(
       },
     ],
     shippingAddress: {
-      adress: { type: String, required: true },
+      address: { type: String, required: true },
       city: { type: String, required: true },
       postalCode: { type: String, required: true },
       country: { type: String, required: true },
-    },
-    paymentResult: {
-      id: { type: String },
-      status: { typs: String },
-      update_time: { typs: String },
-      email_address: { typs: String },
     },
     itemsPrice: {
       type: Number,
       required: true,
       default: 0.0,
     },
-    taxPrice: {
-      type: Number,
+    paymentMethod: {
+      type: String,
       required: true,
-      default: 0.0,
+      enum: {
+        values: ["PayPal", "COD", "Stripe"],
+      },
+    },
+    paymentResult: {
+      id: { type: String },
+      status: {
+        type: String,
+      },
+      update_time: { type: Date },
+      email_address: { type: String },
     },
     shippingPrice: {
       type: Number,
@@ -74,4 +82,4 @@ const orderSchema = new mongoose.Schema(
   },
 );
 
-const Order = mongoose.model("Order", orderSchema);
+export const Order = mongoose.model("Order", orderSchema);

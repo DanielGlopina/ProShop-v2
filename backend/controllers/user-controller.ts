@@ -47,6 +47,8 @@ export const refresh = asyncHandler(async (req, res, next) => {
   res.cookie("refreshToken", userData.refreshToken, {
     maxAge: 30 * 24 * 60 * 60 * 1000,
     httpOnly: true,
+    sameSite: "lax",
+    secure: false,
   });
 
   return res.json(userData);

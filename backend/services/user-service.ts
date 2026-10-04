@@ -37,7 +37,7 @@ export const registrationService = async (
     _id: String(user._id),
   });
 
-  const tokens = generateTokens({ ...userDto, isAdmin: false });
+  const tokens = generateTokens(userDto);
 
   await saveToken(userDto.id, tokens.refreshToken);
 
@@ -67,7 +67,7 @@ export const loginService = async (email: string, password: string) => {
     _id: String(user._id),
   });
 
-  const tokens = generateTokens({ ...userDto, isAdmin: false });
+  const tokens = generateTokens(userDto);
 
   await saveToken(userDto.id, tokens.refreshToken);
 
@@ -107,7 +107,7 @@ export const refreshService = async (refreshToken: string) => {
     _id: String(user._id),
   });
 
-  const tokens = generateTokens({ ...userDto, isAdmin: false });
+  const tokens = generateTokens(userDto);
   await saveToken(userDto.id, tokens.refreshToken);
 
   return {
@@ -129,3 +129,4 @@ export const getAllUsersService = async (): Promise<UserResponse[]> => {
     }),
   );
 };
+

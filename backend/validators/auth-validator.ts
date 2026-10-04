@@ -2,22 +2,45 @@ import { body } from "express-validator";
 
 export const registerValidator = [
   body("name")
+    .isString()
+    .withMessage("Name must be at least 2 characters long.")
     .trim()
-    .notEmpty()
-    .withMessage("Name is required")
-    .isLength({ min: 2, max: 50 })
-    .withMessage("Name shoud have length between 2 & 50 characters")
-    .matches(/^[a-zA-Zа-яА-ЯёЁіІїЇєЄ'\s-]+$/)
-    .withMessage("Name should not contain numbers & spec. symbols")
-    .escape(),
+    .isLength({ min: 2 })
+    .withMessage("Name must be at least 2 characters long.")
+    .isLength({ max: 50 })
+    .withMessage("Name must not exceed 50 characters.")
+    .matches(/^[A-Za-z][A-Za-z '-]*$/)
+    .withMessage("Name may contain only letters, spaces, apostrophes, and hyphens."),
 
   body("email")
+    .isString()
+    .withMessage("Email is required.")
     .trim()
-    .normalizeEmail()
+    .notEmpty()
+    .withMessage("Email is required.")
     .isEmail()
-    .withMessage("Incorrect email format"),
+    .withMessage("Enter a valid email address.")
+    .isLength({ max: 254 })
+    .withMessage("Email must not exceed 254 characters."),
 
   body("password")
-    .isLength({ min: 3, max: 32 })
-    .withMessage("Password shoud have length between 3 & 32 characters"),
+    .isString()
+    .withMessage("Password must be at least 3 characters long.")
+    .isLength({ min: 3 })
+    .withMessage("Password must be at least 3 characters long.")
+    .isLength({ max: 32 })
+    .withMessage("Password must not exceed 32 characters.")
+    .matches(/[A-Za-z]/)
+    .withMessage("Password must contain at least one letter.")
+    .matches(/\d/)
+    .withMessage("Password must contain at least one number."),
+];
+
+export const loginValidator = [
+  body("email").isString(),
+  body("password")
+    .isString()
+    .withMessage("Password is required.")
+    .notEmpty()
+    .withMessage("Password is required."),
 ];
